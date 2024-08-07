@@ -1,23 +1,6 @@
 # DiffuseLoco: Real-Time Legged Locomotion Control with Diffusion from Offline Datasets
 
 
-[[Paper]](https://arxiv.org/abs/2404.19264)
-
-
-
-
-[Xiaoyu Huang](http://cheng-chi.github.io/)<sup>1</sup>,
-[Yufeng Chi](https://www.cs.cmu.edu/~sfeng/)<sup>1</sup>,
-[Ruofeng Wang](https://yilundu.github.io/)<sup>1</sup>,
-[Zhongyu Li](https://www.zhenjiaxu.com/)<sup>1</sup>,
-[Xuebin Peng](https://www.eacousineau.com/)<sup>2</sup>,
-[Sophia Shao](http://www.benburchfiel.com/)<sup>1</sup>,
-[Borivoje Nikolic](https://www.cs.columbia.edu/~shurans/)<sup>1</sup>
-[Koushil Sreenath](https://www.cs.columbia.edu/~shurans/)<sup>1</sup>
-
-
-<sup>1</sup>UC Berkeley,
-<sup>2</sup>Simon Fraser University
 
 ## Setup
 

@@ -28,7 +28,7 @@ logging:
   group: null
   id: null
   mode: online
-  name: 2023.01.16-20.11.42_train_diffusion_transformer_lowdim_pusht_lowdim
+  name: 2023.01.16-20.11.42_train_diffusion_transformer
   project: diffusion_policy_debug
   resume: true
   tags:
@@ -36,8 +36,8 @@ logging:
   - pusht_lowdim
   - default
 multi_run:
-  run_dir: data/outputs/2023.01.16/20.11.42_train_diffusion_transformer_lowdim_pusht_lowdim
-  wandb_name_base: 2023.01.16-20.11.42_train_diffusion_transformer_lowdim_pusht_lowdim
+  run_dir: data/outputs/2023.01.16/20.11.42_train_diffusion_transformer
+  wandb_name_base: 2023.01.16-20.11.42_train_diffusion_transformer
 n_action_steps: 8
 n_latency_steps: 0
 n_obs_steps: 6
@@ -52,7 +52,7 @@ optimizer:
   weight_decay: 0.001
 past_action_visible: false
 policy:
-  _target_: diffusion_policy.policy.diffusion_transformer_lowdim_policy.DiffusionTransformerLowdimPolicy
+  _target_: diffusion_policy.policy.diffusion_transformer_policy.DiffusionTransformerLowdimPolicy
   action_dim: 12
   horizon: 16
   model:
@@ -99,7 +99,7 @@ task:
     val_ratio: 0.02
     zarr_path: recorded_data16-02-51_go1.zarr
   env_runner:
-    _target_: diffusion_policy.env_runner.diffsionrobot_lowdim_legged_runner.LeggedRunner
+    _target_: diffusion_policy.env_runner.legged_runner.LeggedRunner
     agent_keypoints: false
     fps: 10
     keypoint_visible_rate: 1.0

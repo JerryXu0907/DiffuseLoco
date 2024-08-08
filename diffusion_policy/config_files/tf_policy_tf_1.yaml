@@ -52,7 +52,7 @@ optimizer:
   weight_decay: 0.001
 past_action_visible: false
 policy:
-  _target_: diffusion_policy.policy.bc_lowdim_policy.DiffusionTransformerLowdimPolicy
+  _target_: diffusion_policy.policy.bc_policy.DiffusionTransformerLowdimPolicy
   action_dim: 12
   horizon: 8
   model:
@@ -99,7 +99,7 @@ task:
     val_ratio: 0.02
     zarr_path: recorded_data16-02-51_go1.zarr
   env_runner:
-    _target_: diffusion_policy.env_runner.diffsionrobot_lowdim_legged_runner.LeggedRunner
+    _target_: diffusion_policy.env_runner.legged_runner.LeggedRunner
     agent_keypoints: false
     fps: 10
     keypoint_visible_rate: 1.0

@@ -4,6 +4,11 @@ Training:
 python train.py --config-name=train_diffusion_lowdim_workspace
 """
 
+import sys
+# use line-buffering for both stdout and stderr
+sys.stdout = open(sys.stdout.fileno(), mode='w', buffering=1)
+sys.stderr = open(sys.stderr.fileno(), mode='w', buffering=1)
+
 try:
     from isaacgym.torch_utils import *
 except:

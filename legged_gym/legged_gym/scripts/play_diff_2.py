@@ -38,7 +38,7 @@ from legged_gym.utils import  get_args, export_policy_as_jit, task_registry, Log
 import numpy as np
 import torch
 
-from legged_gym.envs.diffusion.bc_lowdim_policy_nsteps import DiffusionTransformerLowdimPolicy
+from legged_gym.envs.diffusion.bc_policy_nsteps import DiffusionTransformerLowdimPolicy
 from legged_gym.envs.diffusion.diffusion_env_wrapper import DiffusionEnvWrapper
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 from diffusion_policy.model.common.normalizer import LinearNormalizer

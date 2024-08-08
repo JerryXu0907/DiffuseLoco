@@ -56,14 +56,16 @@ import os
 
 from legged_gym.utils.task_registry import task_registry
 
-task_registry.register( "anymal_c_rough", Anymal, AnymalCRoughCfg(), AnymalCRoughCfgPPO() )
-task_registry.register( "anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCfgPPO() )
-task_registry.register( "anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO() )
-task_registry.register( "cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO() )
+task_registry.register("anymal_c_rough", Anymal, AnymalCRoughCfg(), AnymalCRoughCfgPPO())
+task_registry.register("anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCfgPPO())
+task_registry.register("anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO())
+task_registry.register("cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO())
 
 task_registry.register("cyber2_stand_dance", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPO())
 task_registry.register("cyber2_stand_dance_aug", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOAug())
 task_registry.register("cyber2_stand_dance_emlp", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOEMLP())
+task_registry.register("cyber2_hop", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
+task_registry.register("cyber2_trot", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
 
 task_registry.register("cyber2_push_door", CyberPushDoorEnv, CyberPushDoorConfig(), CyberPushDoorCfgPPO())
 task_registry.register("cyber2_push_door_aug", CyberPushDoorEnv, CyberPushDoorConfig(), CyberPushDoorCfgPPOAug())

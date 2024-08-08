@@ -11,11 +11,10 @@ import torch
 import time
 import sys
 import threading
-import queue
 
 from matplotlib import pyplot as plt
 
-from legged_gym.envs.diffusion.bc_lowdim_policy_nsteps import DiffusionTransformerLowdimPolicy
+from legged_gym.envs.diffusion.bc_policy_nsteps import DiffusionTransformerLowdimPolicy
 from legged_gym.envs.diffusion.diffusion_env_wrapper import DiffusionEnvWrapper
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 from diffusion_policy.model.common.normalizer import LinearNormalizer

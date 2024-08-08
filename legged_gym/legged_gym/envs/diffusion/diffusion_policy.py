@@ -8,7 +8,7 @@ from einops import rearrange, reduce
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 from diffusion_policy.model.common.normalizer import LinearNormalizer
-from diffusion_policy.policy.base_lowdim_policy import BaseLowdimPolicy
+from diffusion_policy.policy.base_policy import BaseLowdimPolicy
 from diffusion_policy.model.diffusion.mask_generator import LowdimMaskGenerator
 class DiffusionTransformerLowdimPolicy(BaseLowdimPolicy):
     def __init__(self, 

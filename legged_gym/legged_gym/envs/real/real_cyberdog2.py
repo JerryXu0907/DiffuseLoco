@@ -35,13 +35,10 @@ import threading
 import numpy as np
 from scipy.spatial.transform import Rotation
 from isaacgym.torch_utils import *
-from isaacgym import gymtorch, gymapi, gymutil
 import torch
-from cc.udp import UDPTx, UDPRx
 
 from legged_gym.envs.base.legged_robot import LeggedRobot
-from legged_gym.utils import ActionFilterButter
-# from torch.tensor import Tensor
+
 
 import time
 import threading
@@ -104,13 +101,7 @@ class RealCyberDog2(LeggedRobot):
         self.raw_observation=np.zeros((N_OBSERVATIONS, ))
         
 
-        # self.rx_udp = UDPRx((HOST_IP, HOST_PORT))
         self.rx_udp = UDPRx()
-        # error = udp.initialize(byref(self.rx_udp), HOST_IP, HOST_PORT, ROBOT_IP, ROBOT_PORT)
-        # if error:
-        #     print("Error initializing UDPRx")
-        #     exit()
-        # self.tx_udp = UDPTx((ROBOT_IP, ROBOT_PORT))
 
         self.rx_buffer = None
         self.tx_buffer = np.zeros((N_ACTIONS, ), dtype=np.float32)

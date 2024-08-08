@@ -1,6 +1,6 @@
 """
 Usage:
-python pytorch_save.py --checkpoint data/outputs/2023.11.06/10.23.44_train_diffusion_transformer_lowdim_pusht_lowdim/checkpoints/epoch=0000-test_mean_score=1.000.ckpt -o data/pusht_eval_output
+python pytorch_save.py --checkpoint data/outputs/2023.11.06/10.23.44_train_diffusion_transformer/checkpoints/epoch=0000-test_mean_score=1.000.ckpt -o data/pusht_eval_output
 """
 
 import sys
@@ -32,7 +32,7 @@ def main(checkpoint, output_dir, device):
     payload = torch.load(open(checkpoint, 'rb'), pickle_module=dill)
     cfg = payload['cfg']
     action_steps = 4            # Maybe you need to change this accordingly
-    cfg['task']['env_runner']['_target_'] = 'diffusion_policy.env_runner.diffsionrobot_lowdim_isaac_runner.IsaacHumanoidRunner'
+    cfg['task']['env_runner']['_target_'] = 'diffusion_policy.env_runner.isaac_runner.IsaacHumanoidRunner'
     cfg['n_action_steps'] = action_steps
     cfg['task']['env_runner']['n_action_steps'] = action_steps
     cfg['policy']['n_action_steps'] = action_steps

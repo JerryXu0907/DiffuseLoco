@@ -123,10 +123,13 @@ class LeggedRunner(BaseLowdimRunner):
         action_error = []
         idx = 0    
         saved_idx = 0    
-        skip = 5
+        
+        
+        evaluate = False
 
-        record_done = torch.zeros(100)
-        record_episode_length = torch.zeros(100)
+        if evaluate:
+            record_done = torch.zeros(100)
+            record_episode_length = torch.zeros(100)
 
         action = torch.zeros((env.num_envs, 1, env.num_actions), dtype=torch.float32, device=device)
         while True:
@@ -134,15 +137,12 @@ class LeggedRunner(BaseLowdimRunner):
             with torch.no_grad():
                 # expert_action = expert_policy.act_inference(obs.detach())
 
-                if (self.task == "hop" or self.task == "bounce"):
-                    expert_action = env.get_diffusion_action(expert_action)
+                if "hop" in self.task:
+                    state_history[:, -policy.n_obs_steps-1:-1, 6:9] = torch.tensor([0.4, 0., 0.])
+                elif "trot" in self.task:
+                    state_history[:, -policy.n_obs_steps-1:-1, 6:9]  = torch.tensor([0.3, 0.5, 0.])
 
-                # if idx % skip == 4: #not save_zarr and 
-                if online:    
-                    # if idx < 200:
-                    #     state_history[:, -policy.n_obs_steps-1:-1, 6:9]  = 0.
-                    #     state_history[:, -policy.n_obs_steps-1:-1, 6] = 0.5
-
+                if online:
                     # IO ACTION
                     obs_dict = {"obs": state_history[:, -policy.n_obs_steps-1:-1, :]}
                     t1 = time.perf_counter()
@@ -182,16 +182,6 @@ class LeggedRunner(BaseLowdimRunner):
                 state_history[env_ids,:,:] = single_obs_dict["obs"][env_ids].to(state_history.device)[:,None,:]
                 action_history[env_ids,:,:] = 0.0
 
-                mask = (record_done < 1) & done.cpu()
-                # print(env_ids)
-                record_episode_length[mask] += temp_length_buf[mask].cpu().float()
-                record_done += mask
-                if (record_done == 1).all():
-                    print(torch.mean(record_episode_length))
-                    print(torch.sum(record_episode_length >= 1000), torch.sum(mask) / 100)
-                    break
-                # print(record_done)
-                
                 idx = 0
                 
                 # flush saved data
@@ -211,6 +201,16 @@ class LeggedRunner(BaseLowdimRunner):
                         recorded_acs_episode[env_ids[i]] = 0
                         
 
+            if len(env_ids) > 0 and evaluate:
+                mask = (record_done < 1) & done.cpu()
+                # print(env_ids)
+                record_episode_length[mask] += temp_length_buf[mask].cpu().float()
+                record_done += mask
+                if (record_done == 1).all():
+                    print(torch.mean(record_episode_length))
+                    print(torch.sum(record_episode_length >= 1000), torch.sum(mask) / 100)
+                    break
+                
                     
             done = done.cpu().numpy()
             done = np.all(done)

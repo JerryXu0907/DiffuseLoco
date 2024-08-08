@@ -17,24 +17,33 @@ from isaacgym.terrain_utils import *
 # import rospy
 # from std_msgs.msg import Float32MultiArray
 
-class CyberWalkSlopeEnv(CyberEnv):
-    def __init__(self, cfg, sim_params, physics_engine, sim_device, headless):
-        super().__init__(cfg, sim_params, physics_engine, sim_device, headless)
-        if self.headless:
-            local_transform = gymapi.Transform()
-            local_transform.p = gymapi.Vec3(-0.3, 1, 0.5)
-            local_transform.r = gymapi.Quat.from_axis_angle(gymapi.Vec3(0, -0.2, 1), np.deg2rad(-60))
-            body_handle = self.gym.find_actor_rigid_body_handle(self.envs[self.cam_env_id], self.actor_handles[self.cam_env_id], "base")
-            assert body_handle >= 0
-            self.gym.attach_camera_to_body(self.camera_handle, self.envs[self.cam_env_id], body_handle, local_transform, gymapi.FOLLOW_POSITION)
+class CyberWalkEnv(CyberEnv):
 
-        self.last_pos = torch.zeros((self.num_envs, 3), dtype=torch.float, device=self.device)
-        rospy.init_node('footheight', anonymous=True)
-        self.pub = rospy.Publisher('/footheight', Float32MultiArray, queue_size=10)
+    def get_diffusion_action(self):
+        return self.actions
+    def get_diffusion_observation(self):
+        commands = self.commands.clone()
+        mask = commands[:,1] != 0
+        commands[mask, 0] = commands[mask, 1]
+        commands[:, 2] = 0
+        commands[:, 1] = -1
+        return  torch.cat((  
+            self.projected_gravity,
+            self.projected_forward_vec,
+            commands[:, :3] * self.commands_scale[:3],
+            (self.dof_pos - self.default_dof_pos) * self.obs_scales.dof_pos,
+            self.dof_vel * self.obs_scales.dof_vel,
+            self.actions,       
+        ), dim=-1)    
+    
 
     def _compute_common_obs(self):
-        obs_commands = self.commands[:, :3].clone()
+        # self.commands[::2,2] = 0.05*np.pi
+        # self.commands[1::2,2] = -0.05*np.pi
+        # self.commands[self.episode_length_buf < 50, 2] = 0.
+        obs_commands = self.commands[:, :3]
         obs_commands[:, [0,1]] = obs_commands[:, [1,0]]
+        obs_commands[:, 2] = 0. 
         common_obs_buf = torch.cat((self.projected_gravity,
                                     self.projected_forward_vec,
                                     obs_commands * self.commands_scale,
@@ -48,6 +57,8 @@ class CyberWalkSlopeEnv(CyberEnv):
                 common_obs_buf, 
                 torch.clamp(self.episode_length_buf / self.cfg.rewards.allow_contact_steps, 0., 1.).unsqueeze(dim=-1)
             ], dim=-1)
+        # self.pub.publish(Float32MultiArray(data=(self.root_states[:,:2]).reshape(-1).cpu().numpy()))
+
         return common_obs_buf
     
     def _get_noise_scale_vec(self, cfg):#+6 hand targets
@@ -81,56 +92,19 @@ class CyberWalkSlopeEnv(CyberEnv):
         """ Check if environments need to be reset
         """
         # only explicitly allow foot contact in these mercy steps
-        self.reset_buf = torch.logical_and(
-            torch.any(torch.norm(self.contact_forces[:, self.termination_contact_indices, :], dim=-1) > 1., dim=1),
-            torch.logical_not(torch.logical_and(
-                torch.any(torch.norm(self.contact_forces[:, self.allow_initial_contact_indices, :], dim=-1) > 1., dim=1),
-                self.episode_length_buf <= self.cfg.rewards.allow_contact_steps
-            ))
-        )
-        position_protect = torch.logical_and(
-            self.episode_length_buf > 3, torch.any(torch.logical_or(
-            self.dof_pos < self.dof_pos_hard_limits[:, 0] + 5 / 180 * np.pi, 
-            self.dof_pos > self.dof_pos_hard_limits[:, 1] - 5 / 180 * np.pi
-        ), dim=-1))
-        stand_air_condition = torch.logical_and(
-            torch.logical_and(self.episode_length_buf > 3, self.episode_length_buf <= self.cfg.rewards.allow_contact_steps),
-            torch.any((self.foot_positions[:, -2:, 2] - self._get_heights_at_points(self.foot_positions[:, -2:, :2])) > 0.06, dim=-1)
-        )
-        abrupt_change_condition = torch.logical_and(
-            torch.logical_and(self.episode_length_buf > 3, self.episode_length_buf <= self.cfg.rewards.allow_contact_steps),
-            torch.any(torch.abs(self.dof_pos - self.last_dof_pos) > self.cfg.asset.max_dof_change, dim=-1)
-        )
-
+        # self.reset_buf = torch.logical_and(
+        #     torch.any(torch.norm(self.contact_forces[:, self.termination_contact_indices, :], dim=-1) > 1., dim=1),
+        #     torch.logical_not(torch.logical_and(
+        #         torch.any(torch.norm(self.contact_forces[:, self.allow_initial_contact_indices, :], dim=-1) > 1., dim=1),
+        #         self.episode_length_buf <= self.cfg.rewards.allow_contact_steps
+        #     ))
+        # )
+        self.reset_buf = 0 * torch.any(torch.norm(self.contact_forces[:, self.termination_contact_indices, :], dim=-1) > 1., dim=1)
+        
         self.time_out_buf = self.episode_length_buf > self.max_episode_length # no terminal reward for time-outs
         self.reset_buf |= self.time_out_buf
-        self.reset_buf |= position_protect
-        self.reset_buf |= stand_air_condition
-        self.reset_buf |= abrupt_change_condition
-    
-    def _update_terrain_curriculum(self, env_ids):
-        """ Implements the game-inspired curriculum.
 
-        Args:
-            env_ids (List[int]): ids of environments being reset
-        """
-        # Implement Terrain curriculum
-        if not self.init_done:
-            # don't change on initial reset
-            return
-        distance = torch.norm(self.root_states[env_ids, :2] - self.env_origins_new[env_ids, :2], dim=1)
-        # robots that walked far enough progress to harder terains
-        move_up = distance > 1.5
-        # robots that walked less than half of their required distance go to simpler terrains
-        move_down = (distance < torch.norm(self.commands[env_ids, :2], dim=1)*self.max_episode_length_s*0.5) * ~move_up * (self.episode_length_buf[env_ids] > 100)
-        if not self.cfg.mode == "test":
-            self.terrain_levels[env_ids] += 1 * move_up - 1 * move_down
-        # Robots that solve the last level are sent to a random one
-        self.terrain_levels[env_ids] = torch.where(self.terrain_levels[env_ids]>=self.max_terrain_level,
-                                                   torch.randint_like(self.terrain_levels[env_ids], self.max_terrain_level),
-                                                   torch.clip(self.terrain_levels[env_ids], 0)) # (the minumum level is zero)
-        self.env_origins[env_ids] = self.terrain_origins[self.terrain_levels[env_ids], self.terrain_types[env_ids]]
-    
+
     def update_command_curriculum(self, env_ids):
         if "tracking_lin_vel" in self.episode_sums and torch.mean(self.episode_sums["tracking_lin_vel"][env_ids]) / self.max_episode_length > 0.8 * self.reward_scales["tracking_lin_vel"]:
             # self.command_ranges["lin_vel_x"][0] = 0. # no backward vel
@@ -147,12 +121,9 @@ class CyberWalkSlopeEnv(CyberEnv):
         super()._init_buffers()
         self.last_heading = torch.zeros((self.num_envs,), dtype=torch.float, device=self.device)
         self.init_feet_positions = torch.zeros((self.num_envs, 4, 3), dtype=torch.float, device=self.device)
-        self.env_finish_buffer = torch.zeros(self.num_envs, dtype=torch.int, device=self.device)
-        self.env_success_buffer = torch.zeros(self.num_envs, dtype=torch.int, device=self.device)
-        self.cummulative_energy_per_episode = torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
-        self.energy_per_distance = torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
-        self.survival_time = torch.zeros(self.num_envs, dtype=torch.int, device=self.device)
-
+        # rospy.init_node('traj', anonymous=True)
+        # self.pub = rospy.Publisher('/traj', Float32MultiArray, queue_size=10)
+        
     def _resample_commands(self, env_ids):
         super()._resample_commands(env_ids)
         if self.cfg.commands.discretize:
@@ -163,7 +134,6 @@ class CyberWalkSlopeEnv(CyberEnv):
         super().reset_idx(env_ids)
         heading = self._get_cur_heading()
         self.last_heading[env_ids] = heading[env_ids]
-        self.cummulative_energy_per_episode[env_ids] = 0
     
     def post_physics_step(self):
         """ check terminations, compute observations and rewards
@@ -192,33 +162,12 @@ class CyberWalkSlopeEnv(CyberEnv):
         self.foot_positions = self.rigid_body_state.view(self.num_envs, self.num_bodies, 13)[:, self.feet_indices, 0:3]
 
         self.calf_positions = self.rigid_body_state.view(self.num_envs, self.num_bodies, 13)[:, self.calf_indices, 0:3]
-        self.cummulative_energy_per_episode += torch.sum(torch.multiply(self.torques, self.dof_vel), dim=1) * self.dt
         self._post_physics_step_callback()
 
         # compute observations, rewards, resets, ...
         self.check_termination()
         self.compute_reward()
         env_ids = self.reset_buf.nonzero(as_tuple=False).flatten()
-
-        if self.cfg.mode == "test":
-            for env_id in env_ids:
-                if self.env_finish_buffer[env_id] < 11:
-                    if self.env_finish_buffer[env_id] > 0:
-                        self.env_success_buffer[env_id] += (self.root_states[env_id, 0] - self.env_origins[env_id, 0] > 1.0)
-                        self.energy_per_distance[env_id] += self.cummulative_energy_per_episode[env_id] / (self.root_states[env_id, 0] - self.env_origins[env_id, 0])
-                        self.survival_time[env_id] += self.episode_length_buf[env_id]
-                    self.env_finish_buffer[env_id] += 1
-                    print(min(self.env_finish_buffer))
-            if torch.all(self.env_finish_buffer == 11):
-                self.finish_count = (self.env_finish_buffer - 1).sum().item()
-                self.success_count = self.env_success_buffer.sum().item()
-                print("finish", self.finish_count)
-                print("success", self.success_count)
-                print("success rate", self.success_count / self.finish_count)
-                print("energy per distance", torch.sum(self.energy_per_distance) / self.finish_count)
-                print("survival time", torch.sum(self.survival_time) / self.finish_count)
-                print("\n")
-
         self.reset_idx(env_ids)
         self.compute_observations() # in some cases a simulation step might be required to refresh some obs (for example body positions)
 
@@ -282,8 +231,11 @@ class CyberWalkSlopeEnv(CyberEnv):
         self.gym.set_actor_root_state_tensor_indexed(self.sim,
                                                      gymtorch.unwrap_tensor(self.root_states),
                                                      gymtorch.unwrap_tensor(env_ids_int32), len(env_ids_int32))
+        
     
     def _recompute_ang_vel(self):
+        # self.commands[::2, 3] = self.episode_length_buf[::2] / 500 * np.pi
+        # self.commands[1::2, 3] = -self.episode_length_buf[1::2] / 500 * np.pi
         heading = self._get_cur_heading()
         self.commands[:, 2] = torch.clip(
             0.5*wrap_to_pi(self.commands[:, 3] - heading), -self.cfg.commands.clip_ang_vel, self.cfg.commands.clip_ang_vel
@@ -358,13 +310,11 @@ class CyberWalkSlopeEnv(CyberEnv):
     def _reward_feet_clearance_cmd_linear(self):
         phases = 1 - torch.abs(1.0 - torch.clip((self.foot_indices[:, -2:] * 2.0) - 1.0, 0.0, 1.0) * 2.0)
         foot_height = (self.foot_positions[:, -2:, 2]).view(self.num_envs, -1)# - reference_heights
-
         terrain_at_foot_height = self._get_heights_at_points(self.foot_positions[:, -2:, :2])
         target_height = self.cfg.rewards.foot_target * phases + terrain_at_foot_height + 0.02 
         rew_foot_clearance = torch.square(target_height - foot_height) * (1 - self.desired_contact_states[:, -2:])
         condition = self.episode_length_buf > self.cfg.rewards.allow_contact_steps
         rew_foot_clearance = rew_foot_clearance * condition.unsqueeze(dim=-1).float()
-        self.pub.publish(Float32MultiArray(data=(self.foot_positions[:, -2:, 0] - self.env_origins[:,0:1])[0].cpu().numpy()))
         return torch.sum(rew_foot_clearance, dim=1)
 
     def _reward_rear_air(self):
@@ -436,24 +386,15 @@ class CyberWalkSlopeEnv(CyberEnv):
     def _reward_evaluate_metrics(self):
         # evaluate heading tracking and cost of transport
         metrics = {}
-        mask = torch.abs(self.root_states[:, 0] - self.env_origins[:, 0]) > 0.5
-        # x y lin vel tracking
-        # actual_lin_vel = quat_apply_yaw_inverse(self.base_quat, self.root_states[:, 7:10])
-        # heading_error = torch.norm(self.commands[:,:2] - actual_lin_vel[:,:2], dim=-1)
-        # vel = (self.root_states[:, :3] - self.last_pos[:]) / self.dt
-        # vel = quat_apply_yaw_inverse(self.base_quat, vel)
-        # heading_error = torch.norm(self.commands[:,:2] - vel[:,:2], dim=-1)
-        # heading_error[~mask] = 0.
-        heading_error = torch.zeros((self.num_envs, ), dtype=torch.float, device=self.device)
-        moved_dist = self.root_states[:, :3] - self.env_origins[:, :3]
-        moved_dist[:,0] -= 0.5
-        moved_dist[:,0] = torch.norm(moved_dist[:,[0,2]], dim=-1)
-        desired_dist = self.commands[:,:2] * self.episode_length_buf.view(-1,1) * self.dt
-        desired_dist[:,0] -= 0.5
+        # heading tracking
+        mask = self.episode_length_buf > self.cfg.rewards.allow_contact_steps
 
-        heading_error[self.reset_buf] = torch.norm(desired_dist - moved_dist[:,:2], dim=-1)[self.reset_buf]
-        metrics["tracking_lin_vel"] = heading_error
-        self.last_pos[:] = self.root_states[:, :3]
+        heading = self._get_cur_heading()
+        heading_error = torch.abs(wrap_to_pi(self.commands[:, 3] - heading))
+        # heading_error = torch.abs(self.commands[:, 2] - self.root_states[:,12])
+        # print(heading, heading_error)
+        heading_error[~mask] = 0.
+        metrics["tracking_ang_vel"] = heading_error
         # power consumption
         power = self.power_sum.clone()
         metrics["energy"] = power
@@ -461,14 +402,17 @@ class CyberWalkSlopeEnv(CyberEnv):
         power[~mask] = 0.
 
         metrics["energy"] = power
+
         # base ang vel in yaw
-        base_lin_vel = torch.norm(self.root_states[:,7:10], dim=-1)
-        base_lin_vel[~mask] = 0.
-        metrics["base_lin_vel"] = base_lin_vel
+        base_ang_vel = torch.abs(self.base_ang_vel[:,2])
+        base_ang_vel[~mask] = 0.
+        metrics["base_ang_vel"] = base_ang_vel
         # record time
         metrics["time"] = torch.zeros((self.num_envs, ), dtype=torch.float, device=self.device) 
         metrics["time"][mask] += self.dt
 
         self.metrics = metrics
+        
+
 
         return torch.zeros((self.num_envs, ), dtype=torch.float, device=self.device)

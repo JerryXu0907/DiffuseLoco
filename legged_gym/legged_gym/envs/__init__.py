@@ -46,13 +46,8 @@ from .real.real_cyberdog2 import RealCyberDog2
 from .cyberdog2.c2_standdance_config import CyberStandDanceConfig, CyberStandDanceCfgPPO, CyberStandDanceCfgPPOAug, CyberStandDanceCfgPPOEMLP
 from .cyberdog2.c2_standdance_env import CyberStandDanceEnv
 
-from .cyberdog2.c2_pushdoor_config import CyberPushDoorConfig, CyberPushDoorCfgPPO, CyberPushDoorCfgPPOAug, CyberPushDoorCfgPPOEMLP
-from .cyberdog2.c2_pushdoor_env import CyberPushDoorEnv
-
-from .cyberdog2.c2_walkslope_config import CyberWalkSlopeConfig, CyberWalkSlopeCfgPPO, CyberWalkSlopeCfgPPOAug, CyberWalkSlopeCfgPPOEMLP
-from .cyberdog2.c2_walkslope_env import CyberWalkSlopeEnv
-
-import os
+from .cyberdog2.c2_walk_config import CyberWalkConfig, CyberWalkCfgPPO, CyberWalkCfgPPOAug, CyberWalkCfgPPOEMLP
+from .cyberdog2.c2_walk_env import CyberWalkEnv
 
 from legged_gym.utils.task_registry import task_registry
 
@@ -61,19 +56,9 @@ task_registry.register("anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCfg
 task_registry.register("anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO())
 task_registry.register("cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO())
 
-task_registry.register("cyber2_stand_dance", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPO())
-task_registry.register("cyber2_stand_dance_aug", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOAug())
-task_registry.register("cyber2_stand_dance_emlp", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOEMLP())
-task_registry.register("cyber2_hop", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
-task_registry.register("cyber2_trot", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
-
-task_registry.register("cyber2_push_door", CyberPushDoorEnv, CyberPushDoorConfig(), CyberPushDoorCfgPPO())
-task_registry.register("cyber2_push_door_aug", CyberPushDoorEnv, CyberPushDoorConfig(), CyberPushDoorCfgPPOAug())
-task_registry.register("cyber2_push_door_emlp", CyberPushDoorEnv, CyberPushDoorConfig(), CyberPushDoorCfgPPOEMLP())
-
-task_registry.register("cyber2_walk_slope", CyberWalkSlopeEnv, CyberWalkSlopeConfig(), CyberWalkSlopeCfgPPO())
-task_registry.register("cyber2_walk_slope_aug", CyberWalkSlopeEnv, CyberWalkSlopeConfig(), CyberWalkSlopeCfgPPOAug())
-task_registry.register("cyber2_walk_slope_emlp", CyberWalkSlopeEnv, CyberWalkSlopeConfig(), CyberWalkSlopeCfgPPOEMLP())
+task_registry.register("cyber2_stand", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOAug())
+task_registry.register("cyber2_hop", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPOEMLP())
+task_registry.register("cyber2_trot", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPOEMLP())
 
 task_registry.register("a1", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
 task_registry.register("a1_amp", LeggedRobot, A1AMPCfg(), A1AMPCfgPPO())

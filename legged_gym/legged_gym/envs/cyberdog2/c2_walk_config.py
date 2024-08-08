@@ -3,8 +3,8 @@ import numpy as np
 
 use_vel = True
 ob_t = False
-init_pose = "sit"
-class CyberWalkSlopeConfig(CyberCommonCfg):
+init_pose = "stand"
+class CyberWalkConfig(CyberCommonCfg):
     mode = "train"
     class env(CyberCommonCfg.env):
         num_state_history = 3
@@ -28,7 +28,7 @@ class CyberWalkSlopeConfig(CyberCommonCfg):
             pos = [0.0, 0.0, 0.25] # x,y,z [m]
         elif init_pose == "sit":
             # sit lower
-            pos = [0.0, 0.0, 0.18]
+            pos = [0.0, 0.0, 0.11]
         elif init_pose == "upright":
             pos = [0.0, 0.0, 0.39]
             rot = [0.,-np.sin(np.pi / 4),0.,np.cos(np.pi / 4)]
@@ -125,10 +125,10 @@ class CyberWalkSlopeConfig(CyberCommonCfg):
         clip_ang_vel = 0.25 * np.pi
         default_gait_freq = 2.5
         class ranges(CyberCommonCfg.commands.ranges):
-            lin_vel_x = [0.15, 0.3]
+            lin_vel_x = [0.2, 0.2]
             lin_vel_y = [-0.0, 0.0]
             ang_vel_yaw = [-0.3, 0.3]    # min max [rad/s]
-            heading = [-0.1 * np.pi, 0.1 * np.pi]
+            heading = [-0. * np.pi, 0. * np.pi]
 
     class normalization(CyberCommonCfg.normalization):
         class obs_scales(CyberCommonCfg.normalization.obs_scales):
@@ -136,7 +136,7 @@ class CyberWalkSlopeConfig(CyberCommonCfg):
 
     class rewards(CyberCommonCfg.rewards):
         curriculum = (init_pose == "sit")
-        cl_init = 0.4
+        cl_init = 0.6
         cl_step = 0.2
         # cl_sigma_terms = ["tracking_pos_sigma"] # TODO
         soft_dof_pos_limit = 0.95
@@ -165,7 +165,7 @@ class CyberWalkSlopeConfig(CyberCommonCfg):
         else:
             allow_contact_steps = 50 # !! change with init pose
         before_handtrack_steps = 0 if init_pose == "upright" else 50
-        upright_vec = [0.4, 0.0, 1.0]
+        upright_vec = [0.2, 0.0, 1.0]
         ang_rew_mode = "heading"
 
         class scales(CyberCommonCfg.rewards.scales):
@@ -173,10 +173,8 @@ class CyberWalkSlopeConfig(CyberCommonCfg):
             feet_clearance_cmd_linear = -300
             collision = -2.0
             torque_limits = -0.01
-            # tracking_lin_vel = 0.6#0.5*1.0
-            tracking_lin_vel = 1.2
-            # tracking_ang_vel = 0.5*0.5
-            tracking_ang_vel = 0.5
+            tracking_lin_vel = 0.6#0.5*1.0
+            tracking_ang_vel = 0.5*0.5
             rear_air = -0.5
             action_rate = -0.03
             action_q_diff = -0.5 * 2 if init_pose == "sit" else 0.
@@ -189,31 +187,37 @@ class CyberWalkSlopeConfig(CyberCommonCfg):
             
             foot_twist = -0
             foot_shift = -50
-            evaluate_metrics = 0.00000001
 
+            evaluate_metrics = 0.00000001
+    
     class domain_rand(CyberCommonCfg.domain_rand):
-        push_interval_s = 5
-        max_push_vel_xy = 0.2
+        # push_interval_s = 5
+        # max_push_vel_xy = 0.2
         
-        joint_friction_range = [0.05, 0.05]
-        joint_damping_range = [0.05, 0.05]
-        added_mass_range = [-0., 0.]
-        com_displacement_range = [[-0.01, 0.0, -0.01], [0.01, 0.0, 0.01]]
+        # joint_friction_range = [0.03, 0.08]
+        # joint_damping_range = [0.02, 0.06]
+        # added_mass_range = [-0., 0.]
+        # com_displacement_range = [[-0.01, 0.0, 0.025], [0.01, 0.0, 0.025]]
+
+        randomize_friction = True
+        friction_range = [0.25, 1.75]
+        randomize_base_mass = False
+        added_mass_range = [-1., 1.]
+        push_robots = False
+        push_interval_s = 15
+        max_push_vel_xy = 1.0
+        randomize_gains = False
+        stiffness_multiplier_range = [0.9, 1.1]
+        damping_multiplier_range = [0.9, 1.1]
         
     class terrain(CyberCommonCfg.terrain):
-        mesh_type = 'trimesh' # none, plane, heightfield or trimesh
-        # terrain types: [smooth slope, smooth plane, rough plane]
-        terrain_proportions = [0.5, 0.5, 0.]
-        curriculum = (mesh_type == 'trimesh')
-        max_init_terrain_level = 1 # starting curriculum state
-        num_rows= 2 # number of terrain rows (levels)
-        static_friction = 0.4
-        dynamic_friction = 0.4
+        mesh_type = 'plane' # none, plane, heightfield or trimesh
+        curriculum = False
 
-class CyberWalkSlopeCfgPPO(CyberCommonCfgPPO):
+class CyberWalkCfgPPO(CyberCommonCfgPPO):
     use_wandb = True
     class runner(CyberCommonCfgPPO.runner):
-        experiment_name = "walk_slope_cyber"
+        experiment_name = "stand_dance_cyber"
         max_iterations = 20000
         save_interval = 300
     class policy:
@@ -221,15 +225,11 @@ class CyberWalkSlopeCfgPPO(CyberCommonCfgPPO):
         actor_hidden_dims = [512, 256, 128]
         critic_hidden_dims = [512, 256, 128]
         activation = 'elu'
-    class algorithm( CyberCommonCfgPPO.algorithm ):
-        entropy_coef = 0.01
-        learning_rate = 6e-5
-        schedule = 'fixed'
 
-class CyberWalkSlopeCfgPPOAug(CyberCommonCfgPPO):
+class CyberWalkCfgPPOAug(CyberCommonCfgPPO):
     use_wandb = True
     class runner(CyberCommonCfgPPO.runner):
-        experiment_name = "walk_slope_cyber_aug"
+        experiment_name = "stand_dance_cyber_aug"
         policy_class_name = 'ActorCritic'
         algorithm_class_name = 'PPOAugmented'
         max_iterations = 20000
@@ -239,16 +239,12 @@ class CyberWalkSlopeCfgPPOAug(CyberCommonCfgPPO):
         actor_hidden_dims = [512, 256, 128]
         critic_hidden_dims = [512, 256, 128]
         activation = 'elu'
-    class algorithm( CyberCommonCfgPPO.algorithm ):
-        entropy_coef = 0.01
-        learning_rate = 6e-5
-        schedule = 'fixed'
 
-class CyberWalkSlopeCfgPPOEMLP(CyberCommonCfgPPO):
+class CyberWalkCfgPPOEMLP(CyberCommonCfgPPO):
     use_wandb = True
     class runner(CyberCommonCfgPPO.runner):
-        experiment_name = "walk_slope_cyber_emlp"
-        policy_class_name = 'ActorCriticSymm'
+        experiment_name = "stand_dance_cyber_emlp"
+        policy_class_name = 'ActorCritic'
         algorithm_class_name = 'PPO'
         max_iterations = 20000
         save_interval = 300
@@ -257,7 +253,3 @@ class CyberWalkSlopeCfgPPOEMLP(CyberCommonCfgPPO):
         actor_hidden_dims = [512, 256, 128]
         critic_hidden_dims = [512, 256, 128]
         activation = 'elu'
-    class algorithm( CyberCommonCfgPPO.algorithm ):
-        entropy_coef = 0.01
-        learning_rate = 6e-5
-        schedule = 'fixed'

@@ -27,12 +27,13 @@ from diffusion_policy.workspace.base_workspace import BaseWorkspace
 
 @click.command()
 @click.option("-c", "--checkpoint", required=True)
-@click.option("-o", "--output_dir", required=True)
 @click.option("-d", "--device", default="cuda:0")
+@click.option("--task", default="cyber2_stand_dance_aug")
+@click.option("--output_dir", default="./output")
 @click.option("--headless", default=False)
 @click.option("--online", default=True)
 @click.option("--generate_data", default=False)
-def main(checkpoint, output_dir, device, online, generate_data, **kwargs):
+def main(checkpoint, device, task, output_dir, online, generate_data, **kwargs):
     pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
     
     # load checkpoint
@@ -61,7 +62,8 @@ def main(checkpoint, output_dir, device, online, generate_data, **kwargs):
     policy.to(device)
     policy.eval()
     
-    task="cyber2_stand_dance_aug"
+    # task="cyber2_hop"
+    # task="cyber2_stand"
     
     # run eval
     env_runner = hydra.utils.instantiate(

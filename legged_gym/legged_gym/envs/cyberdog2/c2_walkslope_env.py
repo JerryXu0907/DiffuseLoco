@@ -14,8 +14,8 @@ from PIL import Image as im
 from PIL import ImageDraw
 from isaacgym.terrain_utils import *
 
-import rospy
-from std_msgs.msg import Float32MultiArray
+# import rospy
+# from std_msgs.msg import Float32MultiArray
 
 class CyberWalkSlopeEnv(CyberEnv):
     def __init__(self, cfg, sim_params, physics_engine, sim_device, headless):

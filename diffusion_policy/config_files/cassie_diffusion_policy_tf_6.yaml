@@ -91,7 +91,7 @@ pred_action_steps_only: false
 task:
   action_dim: 10
   dataset:
-    _target_: diffusion_policy.dataset.pusht_dataset.PushTLowdimDataset
+    _target_: diffusion_policy.dataset.cyber_dataset.CyberDogDataset
     horizon: 20
     max_train_episodes: 90
     pad_after: 7

@@ -84,7 +84,7 @@ pip install ./tensorrt-10.3.0-cp38-none-linux_x86_64.whl
 
 
 ## Evaluate Pre-trained Checkpoints
-Hop Demo
+Stand Demo
 
 ```
 python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_hop

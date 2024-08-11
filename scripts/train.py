@@ -23,6 +23,7 @@ from omegaconf import OmegaConf
 import pathlib
 
 from diffusion_policy.workspace.base_workspace import BaseWorkspace
+from diffusion_policy.env_runner.cyber_runner import LeggedRunner
 
 
 # allows arbitrary python code execution in configs using the ${eval:''} resolver
@@ -30,7 +31,8 @@ OmegaConf.register_new_resolver("eval", eval, replace=True)
 
 @hydra.main(
     version_base=None,
-    config_path=str(pathlib.Path(__file__).parent.joinpath("../..", "diffusion_policy","config_files"))
+    config_path=str(pathlib.Path(__file__).parent.joinpath("../..", "diffusion_policy","config_files")),
+    config_name="cyber_diffusion_policy_medium_model.yaml"
 )
 def main(cfg: OmegaConf):
     # resolve immediately so all the ${now:} resolvers

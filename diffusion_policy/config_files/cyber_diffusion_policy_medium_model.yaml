@@ -28,16 +28,16 @@ logging:
   group: null
   id: null
   mode: online
-  name: 2023.01.16-20.11.42_train_diffusion_transformer_lowdim_pusht_lowdim
+  name: 2023.01.16-20.11.42_train_diffusion_transformer_cyber_lowdim
   project: diffusion_policy_debug
   resume: true
   tags:
   - train_diffusion_transformer_lowdim
-  - pusht_lowdim
+  - legged_lowdim
   - default
 multi_run:
-  run_dir: data/outputs/2023.01.16/20.11.42_train_diffusion_transformer_lowdim_pusht_lowdim
-  wandb_name_base: 2023.01.16-20.11.42_train_diffusion_transformer_lowdim_pusht_lowdim
+  run_dir: data/outputs/2023.01.16/20.11.42_train_diffusion_transformer_cyber_lowdim
+  wandb_name_base: 2023.01.16-20.11.42_train_diffusion_transformer_cyber_lowdim
 n_action_steps: 4
 n_latency_steps: 0
 n_obs_steps: 8
@@ -100,7 +100,7 @@ task:
     val_ratio: 0.02
     zarr_path: recorded_data_5_skills_large.zarr
   env_runner:
-    _target_: diffusion_policy.env_runner.legged_runner.LeggedRunner
+    _target_: diffusion_policy.env_runner.cyber_runner.LeggedRunner
     agent_keypoints: false
     fps: 10
     keypoint_visible_rate: 1.0
@@ -118,9 +118,9 @@ task:
     test_start_seed: 100000
     train_start_seed: 0
   keypoint_dim: 2
-  name: pusht_lowdim
+  name: legged_lowdim
   obs_dim: 45
-task_name: pusht_lowdim
+task_name: legged_lowdim
 training:
   checkpoint_every: 10
   debug: false

@@ -12,7 +12,6 @@ import tensorflow as tf
 from cassie_env.cassie_env import CassieEnv
 import time
 import numpy as np
-import argparse
 import ppo.policies as policies 
 from cassie_env import CASSIE_GYM_ROOT_DIR
 import multiprocessing

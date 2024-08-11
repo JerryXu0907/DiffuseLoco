@@ -15,7 +15,7 @@ from legged_gym.utils import task_registry
 class LeggedRunner(BaseLowdimRunner):
     def __init__(self,
             output_dir,
-            task="cyber2_stand_dance_aug",
+            task="cyber2_stand",
             keypoint_visible_rate=1.0,
             n_train=10,
             n_train_vis=3,

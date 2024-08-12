@@ -72,8 +72,9 @@ class LeggedRunner(BaseLowdimRunner):
         # plan for rollout
         obs, _ = env.reset()
         
-        # expert_policy = torch.load('source_ckpts/{}.pt'.format(self.task), map_location=torch.device('cpu'))
-        # expert_policy = expert_policy.to(device)
+        if not online:
+            expert_policy = torch.load('source_ckpts/{}.pt'.format(self.task), map_location=torch.device('cpu'))
+            expert_policy = expert_policy.to(device)
 
         pbar = tqdm.tqdm(total=self.max_steps, desc=f"Eval IsaacGym", 
             leave=False, mininterval=self.tqdm_interval_sec)
@@ -135,7 +136,6 @@ class LeggedRunner(BaseLowdimRunner):
         while True:
             # run policy
             with torch.no_grad():
-                # expert_action = expert_policy.act_inference(obs.detach())
 
                 if "hop" in self.task:
                     state_history[:, -policy.n_obs_steps-1:-1, 6:9] = torch.tensor([.7, 0., 0.])
@@ -158,6 +158,7 @@ class LeggedRunner(BaseLowdimRunner):
                     # RHC Framework -- only use the first action
                     action = pred_action[:,history:history+1,:]
                 else:
+                    expert_action = expert_policy.act_inference(obs.detach())
                     action = expert_action[:, None, :]
             if save_zarr:
                 curr_idx = np.all(recorded_obs_episode == 0, axis=-1).argmax(axis=-1)

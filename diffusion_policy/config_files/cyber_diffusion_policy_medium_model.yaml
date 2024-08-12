@@ -58,7 +58,7 @@ policy:
   model:
     _target_: diffusion_policy.model.diffusion.transformer_for_diffusion.TransformerForDiffusion
     causal_attn: true
-    cond_dim: 45
+    cond_dim: 42
     horizon: 12
     input_dim: 12
     n_cond_layers: 0

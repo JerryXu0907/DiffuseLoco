@@ -431,7 +431,6 @@ class TransformerForDiffusionInferenceCassie(ModuleAttrMixin):
         ) -> None:
         super().__init__()
 
-        self.is_cassie = True
         self.separate_goal_conditioning = separate_goal_conditioning
 
         # compute number of tokens for main trunk and condition encoder
@@ -726,7 +725,6 @@ class TransformerForDiffusionInferenceGo1(ModuleAttrMixin):
         ) -> None:
         super().__init__()
 
-        self.is_cassie = True
         self.separate_goal_conditioning = separate_goal_conditioning
 
         # compute number of tokens for main trunk and condition encoder

@@ -6,32 +6,33 @@
 
 1. Model Defination:
  ```diffusion_policy/diffusion_policy/model/diffusion/transformer_for_diffusion.py```
+
 2. Evaluation Script:
 ```scripts/eval.py```
+
 3. Config File:
 ```diffusion_policy/config_files/cyber_diffusion_policy_n=8.yaml```
+
 4. Environment for evaluation and source policy training:
 ```legged_gym/envs/cyberdog2```
+
 5. Environment Wrapper (RHC, Delayed Inputs, Uniform Obs Space):
  ```diffusion_policy/diffusion_policy/env_runner/cyber_runner.py```
-5. Deploy on real robots (This section is not completed yet) :
+
+6. Deploy on real robots (This section is not completed yet) :
 ```legged_gym/legged_gym/scripts``` and
 ```csrc``` and ```scripts/pytorch_save.py```
-
-
-
-
-
 
 
 ## Setup
 
 Tested on:
+
 - Ubuntu 22.04
-- NVIDIA driver version: 535 (535.129.03)
-- CUDA version: 12.1.1
-- cuDNN version: 8.9.7 for CUDA 12.X
-- TensorRT version: 8.6 GA
+- NVIDIA driver version: 550 (550.90.07)
+- CUDA version: 12.4
+- cuDNN version: 8.9.7 for CUDA 12.4
+- TensorRT version: 10.3.0.26 GA
 
 ### Environment
 

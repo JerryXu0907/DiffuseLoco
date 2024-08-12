@@ -2,21 +2,23 @@
 
 
 
-## Codebase Tutorial
-This codebase is combined with two parts, diffusion_policy and AMP_for_hardware.
-### Diffusion policy 
+## Codebase Structure
+
 1. Model Defination:
  ```diffusion_policy/diffusion_policy/model/diffusion/transformer_for_diffusion.py```
 2. Evaluation Script:
-```eval.py```
+```scripts/eval.py```
 3. Config File:
-```config_files/cyber_diffusion_policy_n=8.yaml```
+```diffusion_policy/config_files/cyber_diffusion_policy_n=8.yaml```
+4. Environment for evaluation and source policy training:
+```legged_gym/envs/cyberdog2```
+5. Environment Wrapper (RHC, Delayed Inputs, Uniform Obs Space):
+ ```diffusion_policy/diffusion_policy/env_runner/cyber_runner.py```
+5. Deploy on real robots (This section is not completed yet) :
+```legged_gym/legged_gym/scripts``` and
+```csrc``` and ```scripts/pytorch_save.py```
 
 
-### AMP_for_hardware
-1. Gather source policy and training data.
-2. Environment for legged gym for evaluation and training.
-3. Deploy on real robots.(This section is not demonstrated in the codebase yet.)
 
 
 
@@ -24,7 +26,7 @@ This codebase is combined with two parts, diffusion_policy and AMP_for_hardware.
 
 ## Setup
 
-System requirements:
+Tested on:
 - Ubuntu 22.04
 - NVIDIA driver version: 535 (535.129.03)
 - CUDA version: 12.1.1
@@ -78,24 +80,21 @@ Bipedal Walking Task
 
 ```bash
 source env.sh
-```
-```bash
+
 python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_stand
 ```
 
 Hop Task
 ```bash
 source env.sh
-```
-```bash
+
 python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_hop
 ```
 
 Walk Task (Some bugs still exist when merging environments)
 ```bash
 source env.sh
-```
-```bash
+
 python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_walk
 ```
 

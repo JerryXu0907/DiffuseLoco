@@ -143,6 +143,7 @@ class LeggedRunner(BaseLowdimRunner):
                     state_history[:, -policy.n_obs_steps-1:-1, 6:9]  = torch.tensor([0.8, 1.0, 0.])
 
                 if online:
+                    # USE DELAYED INPUTS s_t-h-1:s_t-1
                     obs_dict = {"obs": state_history[:, -policy.n_obs_steps-1:-1, :]}
                     t1 = time.perf_counter()
                     action_dict = policy.predict_action(obs_dict)
@@ -150,6 +151,9 @@ class LeggedRunner(BaseLowdimRunner):
                     print("time spent diffusion step: ", t2-t1)
                     
                     pred_action = action_dict["action_pred"]
+
+                    # USE THE NEXT PREDICTED ACTION
+                    # RHC Framework -- only use the first action
                     action = pred_action[:,history:history+1,:]
                 else:
                     action = expert_action[:, None, :]

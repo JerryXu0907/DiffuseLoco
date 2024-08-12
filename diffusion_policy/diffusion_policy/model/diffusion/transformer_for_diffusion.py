@@ -161,6 +161,7 @@ class TransformerForDiffusion(ModuleAttrMixin):
                 )
                 mask = t >= (s-1) # add one dimension since time is the first token in cond
                 
+                # Goal Conditioning with Separate Attention Weights
                 if separate_goal_conditioning:
                     if self.is_cassie and self.is_ref:
                         new_mask = torch.zeros((mask.shape[0], (mask.shape[1]-1)*3 + 1), dtype=torch.bool)

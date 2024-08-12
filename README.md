@@ -43,6 +43,8 @@ Install necessary system packages:
 sudo apt install cmake
 ```
 
+Download [required files](https://osf.io/kxt9w/?view_only=8c4633eaf94e4feaa6a6c92ae37d657e) into the DiffuseLoco folder. 
+
 Then, install the python dependencies:
 
 ```bash
@@ -51,7 +53,7 @@ cd DiffuseLoco
 pip install -r requirements.txt
 ```
 
-Then, install IsaacGym for simulation environment:
+Install IsaacGym for simulation environment:
 
 > Note: in the public repo, this should come from NVIDIA's official source. We provide a zip file for easier review purpose only. 
 
@@ -78,7 +80,7 @@ Bipedal Walking Task
 ```bash
 source env.sh
 
-python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_stand
+python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=cyber2_stand
 ```
 
 Hop Task
@@ -86,7 +88,7 @@ Hop Task
 ```bash
 source env.sh
 
-python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_hop
+python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=cyber2_hop
 ```
 
 Bounce Task
@@ -94,15 +96,16 @@ Bounce Task
 ```bash
 source env.sh
 
-python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_bounce
+python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=cyber2_bounce
 ```
 
 Walk Task
+You will be able to see the probabilistic policy executing both trotting and pacing in different envs given the same command
 
 ```bash
 source env.sh
 
-python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_walk
+python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=cyber2_walk
 ```
 
 ## Training
@@ -112,7 +115,7 @@ source env.sh
 
 python scripts/train.py
 ```
-
+Currently dataset generation is still pending. 
 
 ## Compatibility
 
@@ -137,7 +140,7 @@ The codebase is tested on the following systems:
 - TensorRT version: 10.3.0.26 GA
 
 
-## Accelerating for Real-Time Deployment
+## Accelerating for Real-Time Deployment (Optional for Simulation Env)
 
 We use [TensorRT](https://developer.nvidia.com/tensorrt) to accelerate the policy inference and meet the real-time requirement.
 

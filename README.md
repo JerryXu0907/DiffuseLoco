@@ -89,7 +89,15 @@ source env.sh
 python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_hop
 ```
 
-Walk Task (Some bugs still exist when merging environments)
+Bounce Task
+
+```bash
+source env.sh
+
+python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_bounce
+```
+
+Walk Task
 
 ```bash
 source env.sh

@@ -53,4 +53,5 @@ from legged_gym.utils.task_registry import task_registry
 
 task_registry.register("cyber2_stand", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOAug())
 task_registry.register("cyber2_hop", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPO())
+task_registry.register("cyber2_bounce", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPO())
 task_registry.register("cyber2_walk", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPO())

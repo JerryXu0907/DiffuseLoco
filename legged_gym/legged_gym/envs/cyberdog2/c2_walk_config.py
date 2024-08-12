@@ -106,13 +106,12 @@ class CyberWalkConfig(CyberCommonCfg):
         terminate_after_contacts_on = ["base", "head", "FR_thigh", "FL_thigh", "FR_calf", "FL_calf", "FR_foot", "FL_foot", "RL_thigh", "RR_thigh"] # allow calf, add head
         penalize_contacts_on = ["base", "head", "FR_thigh", "FL_thigh", "FR_calf", "FL_calf", "FR_foot", "FL_foot", "RL_calf", "RR_calf", "RL_thigh", "RR_thigh"] # stand
         allow_initial_contacts_on = ["foot", "RL_calf", "RR_calf"]
-        max_dof_change = 0.3
-
-        #fix_base_link = True
     
     class control(CyberCommonCfg.control):
+        control_type = "P"
         stiffness = {'joint': 30.0}
         damping = {'joint': 3.0}
+        action_scale = 0.25
         decimation = 4
         kp_factor_range = [0.8, 1.2]
         kd_factor_range = [0.8, 1.2]
@@ -191,8 +190,8 @@ class CyberWalkConfig(CyberCommonCfg):
             evaluate_metrics = 0.00000001
     
     class domain_rand(CyberCommonCfg.domain_rand):
-        randomize_friction = False
-        friction_range = [1.0, 3.0]
+        randomize_friction = True
+        friction_range = [0.25, 1.75]
         randomize_restitution = False
         randomize_base_mass = False
         added_mass_range = [-0.5, 0.5]
@@ -203,9 +202,9 @@ class CyberWalkConfig(CyberCommonCfg):
         joint_damping_range = [0.02, 0.06]
         
         use_dynamic_kp_scale = False
-        lag_timesteps = 6
-        swing_lag_timesteps = [6, 6]
-        stance_lag_timesteps = [1, 1]
+        lag_timesteps = 0
+        swing_lag_timesteps = [0, 0]
+        stance_lag_timesteps = [0, 0]
 
     class terrain(CyberCommonCfg.terrain):
         mesh_type = 'plane' # none, plane, heightfield or trimesh

@@ -138,9 +138,11 @@ class LeggedRunner(BaseLowdimRunner):
                 # expert_action = expert_policy.act_inference(obs.detach())
 
                 if "hop" in self.task:
-                    state_history[:, -policy.n_obs_steps-1:-1, 6:9] = torch.tensor([0.8, 0., 0.])
+                    state_history[:, -policy.n_obs_steps-1:-1, 6:9] = torch.tensor([.7, 0., 0.])
+                if "bounce" in self.task:
+                    state_history[:, -policy.n_obs_steps-1:-1, 6:9] = torch.tensor([1.5, 0., 0.])
                 elif "walk" in self.task:
-                    state_history[:, -policy.n_obs_steps-1:-1, 6:9]  = torch.tensor([0.8, 1.0, 0.])
+                    state_history[:, -policy.n_obs_steps-1:-1, 6:9]  = torch.tensor([.7, 1., 0.])
 
                 if online:
                     # USE DELAYED INPUTS s_t-h-1:s_t-1

@@ -62,9 +62,6 @@ def main(checkpoint, device, task, output_dir, online, generate_data, **kwargs):
     policy.to(device)
     policy.eval()
     
-    # task="cyber2_hop"
-    # task="cyber2_stand"
-    
     # run eval
     env_runner = hydra.utils.instantiate(
         cfg.task.env_runner,

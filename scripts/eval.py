@@ -44,7 +44,7 @@ def main(checkpoint, device, task, output_dir, online, generate_data, **kwargs):
     OmegaConf.set_struct(cfg, False)
 
     cfg.task.env_runner["device"] = device
-    # cfg["task"]["env_runner"]["_target_"] = "diffusion_policy.env_runner.cyber_runner.LeggedRunner"
+    cfg["task"]["env_runner"]["_target_"] = "diffusion_policy.env_runner.cyber_runner.LeggedRunner"
     print("Using {0} number of observation steps.".format(cfg["task"]["env_runner"]["n_obs_steps"]))
     
     cls = hydra.utils.get_class(cfg._target_)

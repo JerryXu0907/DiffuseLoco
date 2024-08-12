@@ -191,25 +191,22 @@ class CyberWalkConfig(CyberCommonCfg):
             evaluate_metrics = 0.00000001
     
     class domain_rand(CyberCommonCfg.domain_rand):
-        # push_interval_s = 5
-        # max_push_vel_xy = 0.2
-        
-        # joint_friction_range = [0.03, 0.08]
-        # joint_damping_range = [0.02, 0.06]
-        # added_mass_range = [-0., 0.]
-        # com_displacement_range = [[-0.01, 0.0, 0.025], [0.01, 0.0, 0.025]]
-
-        randomize_friction = True
-        friction_range = [0.25, 1.75]
+        randomize_friction = False
+        friction_range = [1.0, 3.0]
+        randomize_restitution = False
         randomize_base_mass = False
-        added_mass_range = [-1., 1.]
-        push_robots = False
-        push_interval_s = 15
-        max_push_vel_xy = 1.0
-        randomize_gains = False
-        stiffness_multiplier_range = [0.9, 1.1]
-        damping_multiplier_range = [0.9, 1.1]
+        added_mass_range = [-0.5, 0.5]
+        randomize_com_displacement = False
+        com_displacement_range = [[-0.01, 0.0, -0.01], [0.01, 0.0, 0.01]]
+        randomize_joint_props = False
+        joint_friction_range = [0.03, 0.08]
+        joint_damping_range = [0.02, 0.06]
         
+        use_dynamic_kp_scale = False
+        lag_timesteps = 6
+        swing_lag_timesteps = [6, 6]
+        stance_lag_timesteps = [1, 1]
+
     class terrain(CyberCommonCfg.terrain):
         mesh_type = 'plane' # none, plane, heightfield or trimesh
         curriculum = False

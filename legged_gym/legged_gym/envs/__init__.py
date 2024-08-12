@@ -51,20 +51,6 @@ from .cyberdog2.c2_walk_env import CyberWalkEnv
 
 from legged_gym.utils.task_registry import task_registry
 
-task_registry.register("anymal_c_rough", Anymal, AnymalCRoughCfg(), AnymalCRoughCfgPPO())
-task_registry.register("anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCfgPPO())
-task_registry.register("anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO())
-task_registry.register("cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO())
-
 task_registry.register("cyber2_stand", CyberStandDanceEnv, CyberStandDanceConfig(), CyberStandDanceCfgPPOAug())
-task_registry.register("cyber2_hop", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPOEMLP())
-task_registry.register("cyber2_trot", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPOEMLP())
-
-task_registry.register("a1", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
-task_registry.register("a1_amp", LeggedRobot, A1AMPCfg(), A1AMPCfgPPO())
-task_registry.register("trot", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
-task_registry.register("pace", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
-
-# task_registry.register("real_amp", RealMiniCheetah, A1AMPCfg(), A1AMPCfgPPO())
-task_registry.register("real_amp", RealCyberDog2, A1AMPCfg(), A1AMPCfgPPO())
-
+task_registry.register("cyber2_hop", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPO())
+task_registry.register("cyber2_walk", CyberWalkEnv, CyberWalkConfig(), CyberWalkCfgPPO())

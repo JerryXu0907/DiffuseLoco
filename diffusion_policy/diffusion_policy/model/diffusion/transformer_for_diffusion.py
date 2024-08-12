@@ -65,13 +65,10 @@ class TransformerForDiffusion(ModuleAttrMixin):
         
         if obs_as_cond:
             if separate_goal_conditioning and not self.is_cassie:
-                print("\n\nseparate goal conditioning, GO1!!!! ")
                 self.cond_obs_emb = nn.Linear(cond_dim-3, n_emb)
                 self.cond_obs_emb_2 = nn.Linear(3, n_emb)
             elif separate_goal_conditioning and self.is_cassie:
-                print("\n\nseparate goal conditioning, CASSIE!!!! ")
                 if self.is_ref:
-                    print("\n\nis REF")
                     self.cond_obs_emb = nn.Linear(cond_dim-5-30, n_emb)
                     self.cond_obs_emb_2 = nn.Linear(5, n_emb)
                     self.cond_obs_emb_3 = nn.Linear(30, n_emb)

@@ -139,7 +139,7 @@ class LeggedRunner(BaseLowdimRunner):
 
                 if "hop" in self.task:
                     state_history[:, -policy.n_obs_steps-1:-1, 6:9] = torch.tensor([0.8, 0., 0.])
-                elif "trot" in self.task:
+                elif "walk" in self.task:
                     state_history[:, -policy.n_obs_steps-1:-1, 6:9]  = torch.tensor([0.8, 1.0, 0.])
 
                 if online:

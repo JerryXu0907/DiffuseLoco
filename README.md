@@ -10,7 +10,7 @@ This codebase is combined with two parts, diffusion_policy and AMP_for_hardware.
 2. Evaluation Script:
 ```eval.py```
 3. Config File:
-```config_files/diffusion_policy_tf_1.yaml```
+```config_files/cyber_diffusion_policy_n=8.yaml```
 
 
 ### AMP_for_hardware
@@ -36,14 +36,69 @@ System requirements:
 First, create the conda environment:
 
 ```bash
-conda create -n diff python=3.8
+conda create -n diffuseloco python=3.8
+```
+followed by 
+```bash
+conda activate diffuseloco
 ```
 
-Then, install the python dependencies:
-
+Install necessary system packages:
 ```bash
+sudo apt install cmake
+```
+Then, install the python dependencies:
+```bash
+cd DiffuseLoco
+
 pip install -r requirements.txt
 ```
+
+Then, install IsaacGym for simulation environment:
+
+note: in the public repo, this should come from nVidia's official source. We provide a zip file for easier review purpose only. 
+```bash
+unzip isaacgym.zip
+
+cd isaacgym/python
+
+pip install -e .
+```
+
+Finally, install the package
+
+```bash
+cd ../..
+
+bash ./install.sh
+```
+
+## Evaluate Pre-trained Checkpoints
+Bipedal Walking Task
+
+```bash
+source env.sh
+```
+```bash
+python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_stand
+```
+
+Hop Task
+```bash
+source env.sh
+```
+```bash
+python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_hop
+```
+
+Walk Task (Some bugs still exist when merging environments)
+```bash
+source env.sh
+```
+```bash
+python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_walk
+```
+
 ### TensorRT
 Goto https://developer.nvidia.com/tensorrt
 
@@ -80,14 +135,6 @@ Install to Python using the following command
 ```
 cd ~/Documents/TensorRT-10.3.0.26/python/
 pip install ./tensorrt-10.3.0-cp38-none-linux_x86_64.whl
-```
-
-
-## Evaluate Pre-trained Checkpoints
-Stand Demo
-
-```
-python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_hop
 ```
 
 

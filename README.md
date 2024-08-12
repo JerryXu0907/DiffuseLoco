@@ -105,6 +105,14 @@ source env.sh
 python ./scripts/eval.py --checkpoint=./checkpoints/cyberdog_final.ckpt --task=cyber2_walk
 ```
 
+## Training
+
+```bash
+source env.sh
+
+python scripts/train.py
+```
+
 
 ## Compatibility
 

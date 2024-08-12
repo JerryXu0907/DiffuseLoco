@@ -43,7 +43,7 @@ Install necessary system packages:
 sudo apt install cmake
 ```
 
-Download [required files](https://osf.io/kxt9w/?view_only=8c4633eaf94e4feaa6a6c92ae37d657e) into the DiffuseLoco folder. 
+Download [required files](https://osf.io/kxt9w/?view_only=8c4633eaf94e4feaa6a6c92ae37d657e) and place them in DiffuseLoco root folder. 
 
 Then, install the python dependencies:
 
@@ -100,6 +100,7 @@ python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=cyber2_bounce
 ```
 
 Walk Task
+
 You will be able to see the probabilistic policy executing both trotting and pacing in different envs given the same command
 
 ```bash

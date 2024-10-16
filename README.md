@@ -1,5 +1,12 @@
 # DiffuseLoco: Real-Time Legged Locomotion Control with Diffusion from Offline Datasets
 
+This repository contains the source code for the paper:
+
+#### [DiffuseLoco: Real-Time Legged Locomotion Control with Diffusion from Offline Datasets](https://arxiv.org/abs/2404.19264)
+The Conference on Robot Learning (CoRL), 2024
+
+[Paper](https://diffuselo.co/static/paper/DiffuseLoco.pdf) / [Project Page](https://diffuselo.co)
+
 
 ## Codebase Structure
 
@@ -179,4 +186,18 @@ Finally, install the Python binding using the following command
 ```bash
 cd $TRT_INSTALL_PATH/python/
 pip install ./tensorrt-10.3.0-cp38-none-linux_x86_64.whl
+```
+
+# Citing the Project
+
+```
+@misc{diffuseloco,
+  title={DiffuseLoco: Real-Time Legged Locomotion Control with Diffusion from Offline Datasets},
+  author={Xiaoyu Huang and Yufeng Chi and Ruofeng Wang and Zhongyu Li and Xue Bin Peng and Sophia Shao and Borivoje Nikolic and Koushil Sreenath},
+  year={2024},
+  eprint={2404.19264},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2404.19264}, 
+}
 ```

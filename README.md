@@ -190,14 +190,13 @@ pip install ./tensorrt-10.3.0-cp38-none-linux_x86_64.whl
 
 # Citing the Project
 
+If you find this code useful, we would appreciate if you would cite it with the following:
+
 ```
-@misc{diffuseloco,
+@article{huang2024diffuseloco,
   title={DiffuseLoco: Real-Time Legged Locomotion Control with Diffusion from Offline Datasets},
-  author={Xiaoyu Huang and Yufeng Chi and Ruofeng Wang and Zhongyu Li and Xue Bin Peng and Sophia Shao and Borivoje Nikolic and Koushil Sreenath},
-  year={2024},
-  eprint={2404.19264},
-  archivePrefix={arXiv},
-  primaryClass={cs.RO},
-  url={https://arxiv.org/abs/2404.19264}, 
+  author={Huang, Xiaoyu and Chi, Yufeng and Wang, Ruofeng and Li, Zhongyu and Peng, Xue Bin and Shao, Sophia and Nikolic, Borivoje and Sreenath, Koushil},
+  journal={arXiv preprint arXiv:2404.19264},
+  year={2024}
 }
 ```

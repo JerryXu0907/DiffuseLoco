@@ -116,6 +116,21 @@ source env.sh
 python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=cyber2_walk
 ```
 
+## Dataset Generation
+
+To generate the dataset from source RL checkpoints for each task, run the following command:
+
+```bash
+source env.sh
+
+python ./scripts/eval.py --checkpoint=./cyberdog_final.ckpt --task=<TASK_NAME>
+--online=false --generate_dataset=true
+```
+
+Then, use `scripts/combine_dataset.py` to combine the generated datasets (`skill_filenames` should be modified).
+
+After that, you can use `scripts/train.py` to train the diffusion model.
+
 ## Training
 
 ```bash
@@ -123,7 +138,6 @@ source env.sh
 
 python scripts/train.py
 ```
-Currently dataset generation is still pending. 
 
 ## Compatibility
 

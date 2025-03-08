@@ -135,7 +135,12 @@ After that, you can use `scripts/train.py` to train the diffusion model.
 - Looks like only `cyber2_stand.pt` source RL policy available for now.
 - Names of datasets should be adapted in `scripts/combine_dataset.py` and `diffusion_policy/config_files/cyber_diffusion_policy_medium_model.yaml`.
 - Change the record length by editing var `len_to_save` in `diffusion_policy/diffusion_policy/env_runner/cyber_runner.py`
-- Condition dims are not match in the original codes, therefore set it to `cond_dim: 45` in `cyber_diffusion_policy_medium_model.yaml` 
+- Condition dims are not match in the original codes, therefore set it to `cond_dim: 45` in `cyber_diffusion_policy_medium_model.yaml`
+- Comment out this to avoid infinity rolling out in `diffusion_policy/diffusion_policy/env_runner/cyber_runner.py`
+  ```
+  # run rollout
+  # if (self.epoch % cfg.training.rollout_every) == 0:
+  ```
 
 ## Training
 

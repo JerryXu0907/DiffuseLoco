@@ -141,6 +141,7 @@ After that, you can use `scripts/train.py` to train the diffusion model.
   # run rollout
   # if (self.epoch % cfg.training.rollout_every) == 0:
   ```
+- There are **ghost values** in `diffusion_policy/diffusion_policy/env_runner/cyber_runner.py`, such as `num_envs`, which should be considered.
 
 ## Training
 

@@ -50,3 +50,5 @@ inputs
 cudart
 transformations
 cc-udp
+onnx
+onnxruntime

@@ -4,6 +4,7 @@ python pytorch_save.py --checkpoint data/outputs/2023.11.06/10.23.44_train_diffu
 """
 
 import sys
+import os
 # use line-buffering for both stdout and stderr
 sys.stdout = open(sys.stdout.fileno(), mode='w', buffering=1)
 sys.stderr = open(sys.stderr.fileno(), mode='w', buffering=1)
@@ -17,9 +18,10 @@ import torch
 import torch.onnx
 import dill
 from omegaconf import OmegaConf
-# import onnxruntime
+import onnxruntime
 
 from diffusion_policy.workspace.base_workspace import BaseWorkspace
+
 
 @click.command()
 @click.option('-c', '--checkpoint', required=True)
@@ -55,55 +57,57 @@ def main(checkpoint, output_dir, device):
 
     model = model.eval()
 
-    sample = torch.rand((1, 12, 12), dtype=torch.float32, device=device)
+    sample = torch.rand((1, 16, 12), dtype=torch.float32, device=device)
     timestep = torch.rand((1, ), dtype=torch.float32, device=device)
-    cond = torch.rand((1, 8, 42), dtype=torch.float32, device=device)
+    cond = torch.rand((1, 8, 45), dtype=torch.float32, device=device)
 
     torch_out = model.forward(sample, timestep, cond)
 
-    torch.save(model, "./go1_ckpts/go1_unet.pt")
+    # create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+
+
+    torch.save(model, f"{output_dir}/{checkpoint.split('/')[-1]}.pt")
 
     config_dict = {'horizon': cfg['policy']['horizon'], 
                    'n_obs_steps': cfg['policy']['n_obs_steps'],
                    'num_inference_steps': cfg['policy']['num_inference_steps'],
                    }
     normalizer_ckpt = {k: v for k, v in payload['state_dicts']['model'].items() if "normalizer" in k}
-    torch.save((config_dict, normalizer_ckpt), "./go1_ckpts/go1_unet_config_dict.pt")
+    torch.save((config_dict, normalizer_ckpt), f"{output_dir}/{checkpoint.split('/')[-1]}_config_dict.pt")
 
-    # onnx_file = "./go1_ckpts/model.onnx"
+    onnx_file = f"{output_dir}/{checkpoint.split('/')[-1]}.onnx"
 
-    # # model = torch.load("model_full.pt")
+    # Export model as ONNX file ----------------------------------------------------
+    torch.onnx.export(
+        model, 
+        (sample, timestep, cond),
+        onnx_file, 
+        input_names=["sample", "timestep", "cond"], 
+        output_names=["action"], 
+        do_constant_folding=True, 
+        verbose=True, 
+        keep_initializers_as_inputs=True, 
+        opset_version=17, 
+        dynamic_axes={}
+        )
 
+    print("Succeeded converting model into ONNX!")
 
-    # # Export model as ONNX file ----------------------------------------------------
-    # torch.onnx.export(
-    #     model, 
-    #     (sample, timestep, cond),
-    #     onnx_file, 
-    #     input_names=["sample", "timestep", "cond"], 
-    #     output_names=["action"], 
-    #     do_constant_folding=True, 
-    #     verbose=True, 
-    #     keep_initializers_as_inputs=True, 
-    #     opset_version=17, 
-    #     dynamic_axes={}
-    #     )
+    ort_session = onnxruntime.InferenceSession(onnx_file, providers=["CPUExecutionProvider"])
 
-    # print("Succeeded converting model into ONNX!")
-
-    # ort_session = onnxruntime.InferenceSession(onnx_file, providers=["CPUExecutionProvider"])
-
-    # # compute ONNX Runtime output prediction
-    # ort_inputs = {
-    #     ort_session.get_inputs()[0].name: sample.detach().cpu().numpy(),
-    #     ort_session.get_inputs()[1].name: timestep.detach().cpu().numpy(),
-    #     ort_session.get_inputs()[2].name: cond.detach().cpu().numpy(),
-    #     }
-    # ort_outs = ort_session.run(None, ort_inputs)
+    # compute ONNX Runtime output prediction
+    ort_inputs = {
+        ort_session.get_inputs()[0].name: sample.detach().cpu().numpy(),
+        ort_session.get_inputs()[1].name: timestep.detach().cpu().numpy(),
+        ort_session.get_inputs()[2].name: cond.detach().cpu().numpy(),
+        }
+    ort_outs = ort_session.run(None, ort_inputs)
     
-    # np.testing.assert_allclose(torch_out.detach().cpu().numpy(), ort_outs[0], rtol=1e-03, atol=1e-05)
+    np.testing.assert_allclose(torch_out.detach().cpu().numpy(), ort_outs[0], rtol=1e-03, atol=1e-05)
 
-    # print("test passed")
+    print("test passed")
 
 
 

@@ -93,3 +93,5 @@ _wandb
 fuse.cfg
 
 *.ai
+
+cyberdog_final.ckpt

@@ -61,6 +61,8 @@ class LeggedRunner(BaseLowdimRunner):
         self.past_action = past_action
         self.max_steps = max_steps
         self.tqdm_interval_sec = tqdm_interval_sec
+        self.env_cfg = env_cfg
+        self.train_cfg = train_cfg
     
     def run(self, policy: BaseLowdimPolicy, online=False, generate_data=False):
         device = policy.device
@@ -133,7 +135,7 @@ class LeggedRunner(BaseLowdimRunner):
             record_episode_length = torch.zeros(100)
 
         action = torch.zeros((env.num_envs, 1, env.num_actions), dtype=torch.float32, device=device)
-        while True:
+        while(True):
             # run policy
             with torch.no_grad():
 

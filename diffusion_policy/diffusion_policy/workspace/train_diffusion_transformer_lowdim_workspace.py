@@ -215,55 +215,55 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
                 policy.eval()
 
                 # run rollout
-                if (self.epoch % cfg.training.rollout_every) == 0:
-                    with torch.no_grad():
-                        # sample trajectory from training set, and evaluate difference
-                        filename = env_runner.run(policy)
+                # if (self.epoch % cfg.training.rollout_every) == 0:
+                #     with torch.no_grad():
+                #         # sample trajectory from training set, and evaluate difference
+                #         filename = env_runner.run(policy)
                         
-                        # dataset = hydra.utils.instantiate(cfg.task.eval_dataset)
-                        # assert isinstance(dataset, BaseLowdimDataset)
-                        # eval_dataloader = DataLoader(dataset, **cfg.dataloader)
+                #         # dataset = hydra.utils.instantiate(cfg.task.eval_dataset)
+                #         # assert isinstance(dataset, BaseLowdimDataset)
+                #         # eval_dataloader = DataLoader(dataset, **cfg.dataloader)
                         
-                        # for batch_idx, batch in enumerate(eval_dataloader):
+                #         # for batch_idx, batch in enumerate(eval_dataloader):
                         
-                        # batch = {}
-                        # with zarr.open(filename) as dataset:
-                        #     obs = np.array(dataset.data.state)
-                        #     actions = np.array(dataset.data.action)
-                        #     episode_indices = np.concatenate([np.array([np.arange(i, i + policy.horizon) for i in range(j*100, j*100+20)]) for j in range(12)])
-                        #     episode_indices = episode_indices.flatten()
-                        #     obs = obs[episode_indices].reshape(-1, policy.horizon, obs.shape[-1])
-                        #     actions = actions[episode_indices].reshape(-1, policy.horizon, actions.shape[-1])
+                #         # batch = {}
+                #         # with zarr.open(filename) as dataset:
+                #         #     obs = np.array(dataset.data.state)
+                #         #     actions = np.array(dataset.data.action)
+                #         #     episode_indices = np.concatenate([np.array([np.arange(i, i + policy.horizon) for i in range(j*100, j*100+20)]) for j in range(12)])
+                #         #     episode_indices = episode_indices.flatten()
+                #         #     obs = obs[episode_indices].reshape(-1, policy.horizon, obs.shape[-1])
+                #         #     actions = actions[episode_indices].reshape(-1, policy.horizon, actions.shape[-1])
                             
-                        #     # batch['obs'] = np.concatenate([obs[..., :-35], obs[..., -5:]], axis=-1)
-                        #     batch['obs'] = obs
-                        #     batch['action'] = actions
-                        #     batch = dict_apply(batch, torch.from_numpy)
-                        #     batch = dict_apply(batch, lambda x: x.to(device, non_blocking=True))
-                        #     obs_dict = {'obs': batch['obs']}
-                        #     gt_action = batch['action']
+                #         #     # batch['obs'] = np.concatenate([obs[..., :-35], obs[..., -5:]], axis=-1)
+                #         #     batch['obs'] = obs
+                #         #     batch['action'] = actions
+                #         #     batch = dict_apply(batch, torch.from_numpy)
+                #         #     batch = dict_apply(batch, lambda x: x.to(device, non_blocking=True))
+                #         #     obs_dict = {'obs': batch['obs']}
+                #         #     gt_action = batch['action']
                             
-                        #     result = policy.predict_action(obs_dict)
-                        #     if cfg.pred_action_steps_only:
-                        #         pred_action = result['action']
-                        #         start = cfg.n_obs_steps - 1
-                        #         end = start + cfg.n_action_steps
-                        #         gt_action = gt_action[:,start:end]
-                        #     else:
-                        #         pred_action = result['action_pred']
-                        #     mse = torch.nn.functional.mse_loss(pred_action, gt_action)
-                        #     # log
-                        #     step_log['eval_action_mse_error'] = np.sqrt(mse.item())
-                        #     print("eval mse: ", mse.item(), np.sqrt(mse.item()))
-                        #     # release RAM
-                        #     del batch
-                        #     del obs_dict
-                        #     del gt_action
-                        #     del result
-                        #     del pred_action
-                        #     del mse
-                        # del dataset
-                        shutil.rmtree(filename)
+                #         #     result = policy.predict_action(obs_dict)
+                #         #     if cfg.pred_action_steps_only:
+                #         #         pred_action = result['action']
+                #         #         start = cfg.n_obs_steps - 1
+                #         #         end = start + cfg.n_action_steps
+                #         #         gt_action = gt_action[:,start:end]
+                #         #     else:
+                #         #         pred_action = result['action_pred']
+                #         #     mse = torch.nn.functional.mse_loss(pred_action, gt_action)
+                #         #     # log
+                #         #     step_log['eval_action_mse_error'] = np.sqrt(mse.item())
+                #         #     print("eval mse: ", mse.item(), np.sqrt(mse.item()))
+                #         #     # release RAM
+                #         #     del batch
+                #         #     del obs_dict
+                #         #     del gt_action
+                #         #     del result
+                #         #     del pred_action
+                #         #     del mse
+                #         # del dataset
+                #         shutil.rmtree(filename)
 
                 # run validation
                 if (self.epoch % cfg.training.val_every) == 0:

@@ -58,7 +58,7 @@ policy:
   model:
     _target_: diffusion_policy.model.diffusion.transformer_for_diffusion.TransformerForDiffusion
     causal_attn: true
-    cond_dim: 42
+    cond_dim: 45
     horizon: 12
     input_dim: 12
     n_cond_layers: 0
@@ -98,7 +98,7 @@ task:
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: recorded_data_5_skills_large.zarr
+    zarr_path: recorded_data_cyber2.zarr
   env_runner:
     _target_: diffusion_policy.env_runner.cyber_runner.LeggedRunner
     agent_keypoints: false

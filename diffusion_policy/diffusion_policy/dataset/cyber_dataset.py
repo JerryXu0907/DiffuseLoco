@@ -24,8 +24,12 @@ class CyberDogDataset(BaseLowdimDataset):
             ):
         super().__init__()
 
-        self.replay_buffer = ReplayBuffer.copy_from_path(
-            zarr_path, keys=[state_key, action_key])
+        if zarr_path.endswith('.zarr'):
+            self.replay_buffer = ReplayBuffer.copy_from_path(
+                zarr_path, keys=[state_key, action_key])
+        elif zarr_path.endswith('.pkl'):
+            self.replay_buffer = ReplayBuffer.create_from_pickle(
+                zarr_path)
 
         val_mask = get_val_mask(
             n_episodes=self.replay_buffer.n_episodes, 
@@ -96,3 +100,20 @@ class CyberDogDataset(BaseLowdimDataset):
 
         torch_data = dict_apply(data, torch.from_numpy)
         return torch_data
+
+if __name__ == "__main__":
+    dataset = CyberDogDataset(
+        # zarr_path='/home/zhengjie/Desktop/DiffuseLoco/recorded_data_cyber2_stand_18-54-59.zarr',
+        zarr_path = '/home/zhengjie/Desktop/AMP/logs/data_collect/g1_amp_example_dagger/g1_amp_fall.pkl',
+        horizon=12,
+        pad_before=1,
+        pad_after=7,
+        obs_key='keypoint',
+        state_key='state',
+        action_key='action',
+        seed=42,
+        val_ratio=0.1,
+        max_train_episodes=90
+    )
+    # print(len(dataset))
+    print(dataset.replay_buffer.episode_ends)

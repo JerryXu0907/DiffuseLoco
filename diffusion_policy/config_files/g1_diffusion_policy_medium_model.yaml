@@ -1,13 +1,13 @@
-_target_: diffusion_policy.workspace.train_diffusion_transformer_lowdim_workspace.TrainDiffusionTransformerLowdimWorkspace
+_target_: diffusion_policy.workspace.train_diffusion_only_workspace.TrainDiffusionTransformerOnlyWorkspace
 action_dim: 23
 checkpoint:
   save_last_ckpt: true
   save_last_snapshot: false
   topk:
-    format_str: epoch={epoch:04d}-test_mean_score={test_mean_score:.3f}.ckpt
+    format_str: epoch={epoch:04d}-val_action_mse_error={val_action_mse_error:.3f}.ckpt
     k: 5
-    mode: max
-    monitor_key: test_mean_score
+    mode: min
+    monitor_key: val_action_mse_error
 dataloader:
   batch_size: 4096
   num_workers: 1
@@ -53,12 +53,12 @@ optimizer:
 past_action_visible: false
 policy:
   _target_: diffusion_policy.policy.diffusion_transformer_lowdim_policy.DiffusionTransformerLowdimPolicy
-  action_dim: 12
+  action_dim: 23
   horizon: 12
   model:
     _target_: diffusion_policy.model.diffusion.transformer_for_diffusion.TransformerForDiffusion
     causal_attn: true
-    cond_dim: 45
+    cond_dim: 98
     horizon: 12
     input_dim: 23
     n_cond_layers: 0
@@ -85,11 +85,11 @@ policy:
     variance_type: fixed_small
   num_inference_steps: 10
   obs_as_cond: true
-  obs_dim: 45
+  obs_dim: 98
   pred_action_steps_only: false
 pred_action_steps_only: false
 task:
-  action_dim: 12
+  action_dim: 23
   dataset:
     _target_: diffusion_policy.dataset.cyber_dataset.CyberDogDataset
     horizon: 12
@@ -98,7 +98,7 @@ task:
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: recorded_data_cyber2.zarr
+    zarr_path: /home/zhengjie/Desktop/AMP/logs/data_collect/g1_amp_example_dagger/g1_amp_fall.pkl
   env_runner:
     _target_: diffusion_policy.env_runner.cyber_runner.LeggedRunner
     agent_keypoints: false
@@ -119,7 +119,7 @@ task:
     train_start_seed: 0
   keypoint_dim: 2
   name: legged_lowdim
-  obs_dim: 45
+  obs_dim: 98
 task_name: legged_lowdim
 training:
   checkpoint_every: 10

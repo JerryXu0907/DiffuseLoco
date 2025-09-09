@@ -32,7 +32,7 @@ OmegaConf.register_new_resolver("eval", eval, replace=True)
 @hydra.main(
     version_base=None,
     config_path=str(pathlib.Path(__file__).parent.joinpath("../..", "diffusion_policy","config_files")),
-    config_name="cyber_diffusion_policy_medium_model.yaml"
+    config_name="g1_diffusion_policy_medium_model.yaml"
 )
 def main(cfg: OmegaConf):
     # resolve immediately so all the ${now:} resolvers

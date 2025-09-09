@@ -35,7 +35,7 @@ from diffusers.training_utils import EMAModel
 
 OmegaConf.register_new_resolver("eval", eval, replace=True)
 
-class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
+class TrainDiffusionTransformerOnlyWorkspace(BaseWorkspace):
     include_keys = ['global_step', 'epoch']
 
     def __init__(self, cfg: OmegaConf, output_dir=None):
@@ -139,7 +139,7 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
         optimizer_to(self.optimizer, device)
 
         # save batch for sampling
-        train_sampling_batch = None
+        val_sampling_batch = None
 
         if cfg.training.debug:
             cfg.training.num_epochs = 2
@@ -162,8 +162,6 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
                     for batch_idx, batch in enumerate(tepoch):
                         # device transfer
                         batch = dict_apply(batch, lambda x: x.to(device, non_blocking=True))
-                        if train_sampling_batch is None:
-                            train_sampling_batch = batch
 
                         # compute loss
                         raw_loss = self.model.compute_loss(batch)
@@ -221,6 +219,8 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
                                 leave=False, mininterval=cfg.training.tqdm_interval_sec) as tepoch:
                             for batch_idx, batch in enumerate(tepoch):
                                 batch = dict_apply(batch, lambda x: x.to(device, non_blocking=True))
+                                if val_sampling_batch is None:
+                                    val_sampling_batch = batch
                                 loss = self.model.compute_loss(batch)
                                 val_losses.append(loss)
                                 if (cfg.training.max_val_steps is not None) \
@@ -231,11 +231,11 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
                             # log epoch average validation loss
                             step_log['val_loss'] = np.sqrt(val_loss)
             
-                # run diffusion sampling on a training batch
+                # run diffusion sampling on a validation batch
                 if (self.epoch % cfg.training.sample_every) == 0:
                     with torch.no_grad():
                         # sample trajectory from training set, and evaluate difference
-                        batch = dict_apply(train_sampling_batch, lambda x: x.to(device, non_blocking=True))
+                        batch = dict_apply(val_sampling_batch, lambda x: x.to(device, non_blocking=True))
                         obs_dict = {'obs': batch['obs']}
                         gt_action = batch['action']
                         
@@ -248,7 +248,7 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
                         else:
                             pred_action = result['action_pred']
                         mse = torch.nn.functional.mse_loss(pred_action, gt_action)
-                        step_log['train_action_mse_error'] = np.sqrt(mse.item())
+                        step_log['val_action_mse_error'] = np.sqrt(mse.item())
                         del batch
                         del obs_dict
                         del gt_action
@@ -270,12 +270,7 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
                         new_key = key.replace('/', '_')
                         metric_dict[new_key] = value
                     # TODO: This is a HACK
-                    metric_dict['test_mean_score'] = 1
-                    
-                    # We can't copy the last checkpoint here
-                    # since save_checkpoint uses threads.
-                    # therefore at this point the file might have been empty!
-                    metric_dict['test_mean_score'] = 1
+                    metric_dict['val_action_mse_error'] = step_log.get('val_action_mse_error', 1)
                     topk_ckpt_path = topk_manager.get_ckpt_path(metric_dict)
 
                     if topk_ckpt_path is not None:
@@ -292,11 +287,15 @@ class TrainDiffusionTransformerLowdimWorkspace(BaseWorkspace):
 
 @hydra.main(
     version_base=None,
-    config_path=str(pathlib.Path(__file__).parent.parent.joinpath("config")), 
-    config_name=pathlib.Path(__file__).stem)
+    # config_path=str(pathlib.Path(__file__).parent.parent.joinpath("config")), 
+    config_path='/home/zhengjie/Desktop/DiffuseLoco/diffusion_policy/config_files',
+    config_name='g1_diffusion_policy_medium_model.yaml')
 def main(cfg):
     workspace = TrainDiffusionTransformerLowdimWorkspace(cfg)
-    workspace.run()
+    latest_ckpt_path = '/home/zhengjie/Desktop/DiffuseLoco/outputs/2025-09-09/15-10-57/checkpoints/latest.ckpt'
+    workspace.load_checkpoint(path=latest_ckpt_path)
+    print(workspace.epoch)
+    # workspace.run()
 
 if __name__ == "__main__":
     main()

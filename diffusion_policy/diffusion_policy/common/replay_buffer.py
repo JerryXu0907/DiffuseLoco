@@ -10,6 +10,7 @@ try:
 except:
     import functools
 import sys
+import pickle
 
 def check_chunks_compatible(chunks: tuple, shape: tuple):
     assert len(shape) == len(chunks)
@@ -147,6 +148,12 @@ class ReplayBuffer:
         group = zarr.open(os.path.expanduser(zarr_path), mode)
         return cls.create_from_group(group, **kwargs)
     
+    @classmethod
+    def create_from_pickle(cls, pickle_path):
+        with open(pickle_path, 'rb') as f:
+            root = pickle.load(f)
+        return cls(root=root)
+
     # ============= copy constructors ===============
     @classmethod
     def copy_from_store(cls, src_store, store=None, keys=None, 

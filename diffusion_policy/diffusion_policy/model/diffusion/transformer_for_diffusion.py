@@ -1039,10 +1039,7 @@ class TransformerForDiffusionG1(ModuleAttrMixin):
         if obs_as_cond:
             assert time_as_cond
             if separate_goal_conditioning:
-                if self.is_cassie and self.is_ref:
-                    T_cond += n_obs_steps*3
-                else:
-                    T_cond += n_obs_steps*2
+                T_cond += n_obs_steps*2
             else:
                 T_cond += n_obs_steps
 
@@ -1056,11 +1053,9 @@ class TransformerForDiffusionG1(ModuleAttrMixin):
         self.cond_obs_emb = None
         
         if obs_as_cond:
-            if separate_goal_conditioning and not self.is_cassie:
+            if separate_goal_conditioning:
                 self.cond_obs_emb = nn.Linear(cond_dim-self.goal_dim, n_emb)
                 self.cond_obs_emb_2 = nn.Linear(self.goal_dim, n_emb)
-            else:
-                self.cond_obs_emb = nn.Linear(cond_dim, n_emb)
 
         self.cond_pos_emb = None
         self.encoder = None
@@ -1204,7 +1199,7 @@ class TransformerForDiffusionG1(ModuleAttrMixin):
         elif isinstance(module, nn.LayerNorm):
             torch.nn.init.zeros_(module.bias)
             torch.nn.init.ones_(module.weight)
-        elif isinstance(module, TransformerForDiffusion):
+        elif isinstance(module, TransformerForDiffusionG1):
             torch.nn.init.normal_(module.pos_emb, mean=0.0, std=0.02)
             if module.cond_obs_emb is not None:
                 torch.nn.init.normal_(module.cond_pos_emb, mean=0.0, std=0.02)

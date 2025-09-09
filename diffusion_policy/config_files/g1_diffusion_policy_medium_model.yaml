@@ -56,7 +56,7 @@ policy:
   action_dim: 23
   horizon: 12
   model:
-    _target_: diffusion_policy.model.diffusion.transformer_for_diffusion.TransformerForDiffusion
+    _target_: diffusion_policy.model.diffusion.transformer_for_diffusion.TransformerForDiffusionG1
     causal_attn: true
     cond_dim: 98
     horizon: 12

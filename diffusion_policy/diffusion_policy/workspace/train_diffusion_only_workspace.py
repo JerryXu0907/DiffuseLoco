@@ -291,7 +291,7 @@ class TrainDiffusionTransformerOnlyWorkspace(BaseWorkspace):
     config_path='/home/zhengjie/Desktop/DiffuseLoco/diffusion_policy/config_files',
     config_name='g1_diffusion_policy_medium_model.yaml')
 def main(cfg):
-    workspace = TrainDiffusionTransformerLowdimWorkspace(cfg)
+    workspace = TrainDiffusionTransformerOnlyWorkspace(cfg)
     latest_ckpt_path = '/home/zhengjie/Desktop/DiffuseLoco/outputs/2025-09-09/15-10-57/checkpoints/latest.ckpt'
     workspace.load_checkpoint(path=latest_ckpt_path)
     print(workspace.epoch)

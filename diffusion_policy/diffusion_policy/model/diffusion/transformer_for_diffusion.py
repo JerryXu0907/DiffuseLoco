@@ -1055,7 +1055,11 @@ class TransformerForDiffusionG1(ModuleAttrMixin):
         if obs_as_cond:
             if separate_goal_conditioning:
                 self.cond_obs_emb = nn.Linear(cond_dim-self.goal_dim, n_emb)
-                self.cond_obs_emb_2 = nn.Linear(self.goal_dim, n_emb)
+                self.cond_obs_emb_2 = nn.Sequential(
+                    nn.Linear(self.goal_dim, n_emb),
+                    nn.Mish(),
+                    nn.Linear(n_emb, n_emb)
+                )
 
         self.cond_pos_emb = None
         self.encoder = None

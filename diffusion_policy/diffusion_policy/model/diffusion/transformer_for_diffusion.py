@@ -1333,6 +1333,7 @@ class TransformerForDiffusionG1(ModuleAttrMixin):
                     curr_dof_pos_emb = self.cond_obs_emb_2(cond[..., 6:29])
                     # (B,To,n_emb)
                     cond_embeddings = torch.cat([cond_embeddings, cond_obs_emb, cond_obs_emb_2 - curr_dof_pos_emb], dim=1)
+                    # cond_embeddings = torch.cat([cond_embeddings, cond_obs_emb, cond_obs_emb_2], dim=1)
                 else:
                     cond_obs_emb = self.cond_obs_emb(cond)
                     # (B,To,n_emb)

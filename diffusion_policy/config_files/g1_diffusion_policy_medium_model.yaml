@@ -132,6 +132,7 @@ training:
   max_val_steps: null
   num_epochs: 1000
   resume: true
+  resume_ckpt: /work/hdd/bffg/zxu14/DiffuseLoco/outputs/2025-09-14/03-23-34/checkpoints
   rollout_every: 3
   sample_every: 3
   seed: 42

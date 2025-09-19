@@ -80,7 +80,7 @@ policy:
     beta_schedule: squaredcos_cap_v2
     beta_start: 0.0001
     clip_sample: true
-    num_train_timesteps: 20
+    num_train_timesteps: 50
     prediction_type: epsilon
     variance_type: fixed_small
   num_inference_steps: 20
@@ -98,7 +98,7 @@ task:
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: /home/zhengjie/Desktop/AMP/logs/data_collect/g1_amp_example_dagger/g1_amp_fall.pkl
+    zarr_path: /work/hdd/bffg/zxu14/AMP/logs/large_no203.pkl
   env_runner:
     _target_: diffusion_policy.env_runner.cyber_runner.LeggedRunner
     agent_keypoints: false
